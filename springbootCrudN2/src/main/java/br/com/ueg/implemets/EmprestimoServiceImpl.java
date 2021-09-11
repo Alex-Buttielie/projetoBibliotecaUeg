@@ -48,12 +48,11 @@ public class EmprestimoServiceImpl implements EmprestimoService {
     @Override
     public Emprestimo salvar(Emprestimo emprestimo) {
 
-
         emprestimo.getLivro().setEmprestado(true);
         emprestimo = emprestimoRep.save(emprestimo);
 
-        emprestimo = atualizarEmprestimoNoLivro(emprestimo);
-        emprestimo = atualizarEmprestimoNaPessoa(emprestimo);
+        this.atualizarEmprestimoNoLivro(emprestimo);
+        this.atualizarEmprestimoNaPessoa(emprestimo);
 
         return emprestimo;
     }
@@ -76,25 +75,28 @@ public class EmprestimoServiceImpl implements EmprestimoService {
     @Override
     public ResponseEntity<Map<String, Emprestimo>> alterar(Emprestimo emprestimo) {
 
-        Emprestimo empresAtualizado = new Emprestimo();
-        empresAtualizado = consultar(emprestimo.getCodEmprestimo());
+        Emprestimo empresAtualizado = consultar(emprestimo.getCodEmprestimo());
+        Livro livro = livroService.consultar(emprestimo.getLivro().getCodigoLivro());
+        Pessoa pessoa = pessoaService.consultar(emprestimo.getPessoa().getCodPessoa());
+        this.atualizaDadosEmprestimo(livro, pessoa, emprestimo, empresAtualizado);
 
-        Long idLivro = emprestimo.getLivro().getCodigoLivro();
-        Livro livro = livroService.consultar(idLivro);
+        Map<String, Emprestimo> resposta =  new HashMap<>();
+        resposta.put("Emprestimo alterado", emprestimoRep.save(empresAtualizado));
 
-        Long idPessoa = emprestimo.getPessoa().getCodPessoa();
-        Pessoa pessoa = pessoaService.consultar(idPessoa);
+        return  ResponseEntity.ok(resposta);
+    }
+
+
+    private void atualizaDadosEmprestimo(Livro livro,
+                                         Pessoa pessoa,
+                                         Emprestimo emprestimo,
+                                         Emprestimo empresAtualizado) {
 
         empresAtualizado.setLivro(livro);
         empresAtualizado.setPessoa(pessoa);
         empresAtualizado.setObservacao(emprestimo.getObservacao());
         empresAtualizado.setIsEmprestimoAtivo(emprestimo.getIsEmprestimoAtivo());
         empresAtualizado.setDataEmprestimo(emprestimo.getDataEmprestimo());
-
-        Map<String, Emprestimo> resposta =  new HashMap<>();
-        resposta.put("Emprestimo alterado", emprestimoRep.save(empresAtualizado));
-
-        return  ResponseEntity.ok(resposta);
     }
 
     @Override
@@ -103,21 +105,26 @@ public class EmprestimoServiceImpl implements EmprestimoService {
         Emprestimo emprestimo = consultar(id);
 
         Livro livro = emprestimo.getLivro();
-        livro.setEmprestado(false);
-        livro.setEmprestimo(null);
-        livroService.alterar(livro);
+        this.desvinculaLivroEmprestimo(livro);
 
         Pessoa pessoa = emprestimo.getPessoa();
-        pessoa.setEmprestimo(null);
-        pessoaService.alterar(pessoa);
-        
+        this.desvinculaPessoaEmprestimo(pessoa);
+
         emprestimoRep.delete(emprestimo);
         Map<String, Long> resposta = new HashMap();
         resposta.put("Emprestimo excluído: ", id);
 
-
-
         return ResponseEntity.ok(resposta);
+    }
 
+    private void desvinculaPessoaEmprestimo(Pessoa pessoa) {
+        pessoa.setEmprestimo(null);
+        pessoaService.alterar(pessoa);
+    }
+
+    private void desvinculaLivroEmprestimo(Livro livro) {
+        livro.setEmprestado(false);
+        livro.setEmprestimo(null);
+        livroService.alterar(livro);
     }
 }
