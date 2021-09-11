@@ -1,5 +1,7 @@
 package br.com.ueg.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -15,6 +17,7 @@ public class Livro {
 
     @OneToOne
     @JoinColumn(nullable = true, unique = false)
+    @JsonBackReference
     private Emprestimo emprestimo;
 
     private Boolean isEmprestado;

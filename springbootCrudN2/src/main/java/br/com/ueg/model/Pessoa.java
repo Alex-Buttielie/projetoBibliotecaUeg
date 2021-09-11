@@ -1,6 +1,8 @@
 package br.com.ueg.model;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.*;
 
 @Entity
@@ -11,6 +13,11 @@ public class Pessoa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long codPessoa;
     private String nomePessoa;
+
+    @OneToOne
+    @JoinColumn(nullable = true, unique = false)
+    @JsonBackReference
+    private Emprestimo emprestimo;
 
     public Long getCodPessoa() {
         return codPessoa;
@@ -26,5 +33,13 @@ public class Pessoa {
 
     public void setNomePessoa(String nomePessoa) {
         this.nomePessoa = nomePessoa;
+    }
+
+    public Emprestimo getEmprestimo() {
+        return emprestimo;
+    }
+
+    public void setEmprestimo(Emprestimo emprestimo) {
+        this.emprestimo = emprestimo;
     }
 }

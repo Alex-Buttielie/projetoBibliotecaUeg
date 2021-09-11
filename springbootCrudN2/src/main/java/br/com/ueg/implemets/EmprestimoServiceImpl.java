@@ -47,7 +47,30 @@ public class EmprestimoServiceImpl implements EmprestimoService {
 
     @Override
     public Emprestimo salvar(Emprestimo emprestimo) {
-        return emprestimoRep.save(emprestimo);
+
+
+        emprestimo.getLivro().setEmprestado(true);
+        emprestimo = emprestimoRep.save(emprestimo);
+
+        emprestimo = atualizarEmprestimoNoLivro(emprestimo);
+        emprestimo = atualizarEmprestimoNaPessoa(emprestimo);
+
+        return emprestimo;
+    }
+
+    private Emprestimo atualizarEmprestimoNaPessoa(Emprestimo emprestimo) {
+        emprestimo.getPessoa().setEmprestimo(emprestimo);
+        Pessoa pessoa = emprestimo.getPessoa();
+        pessoaService.alterar(pessoa);
+        return emprestimo;
+    }
+
+    private Emprestimo atualizarEmprestimoNoLivro(Emprestimo emprestimo) {
+
+        emprestimo.getLivro().setEmprestimo(emprestimo);
+        Livro livro = emprestimo.getLivro();
+        livroService.alterar(livro);
+        return emprestimo;
     }
 
     @Override
@@ -78,9 +101,22 @@ public class EmprestimoServiceImpl implements EmprestimoService {
     public ResponseEntity<Map<String, Long>> excluir(Long id) {
 
         Emprestimo emprestimo = consultar(id);
+
+        Livro livro = emprestimo.getLivro();
+        livro.setEmprestado(false);
+        livro.setEmprestimo(null);
+        livroService.alterar(livro);
+
+        Pessoa pessoa = emprestimo.getPessoa();
+        pessoa.setEmprestimo(null);
+        pessoaService.alterar(pessoa);
+        
         emprestimoRep.delete(emprestimo);
         Map<String, Long> resposta = new HashMap();
         resposta.put("Emprestimo excluído: ", id);
+
+
+
         return ResponseEntity.ok(resposta);
 
     }
