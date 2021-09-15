@@ -1,7 +1,10 @@
 package br.com.ueg.model;
 
+import br.com.ueg.controller.EmprestimoController;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.Entity;
 import javax.persistence.*;
@@ -9,6 +12,9 @@ import java.util.Date;
 
 @Entity
 @Table(name = "emprestimo")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "codEmprestimo")
 public class Emprestimo {
 
 

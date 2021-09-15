@@ -1,12 +1,17 @@
 package br.com.ueg.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 @Table(name = "livro")
+@JsonIdentityInfo(scope = Livro.class,
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "codigoLivro")
 public class Livro {
 
     @Id
@@ -17,7 +22,6 @@ public class Livro {
 
     @OneToOne
     @JoinColumn(nullable = true, unique = false)
-    @JsonBackReference
     private Emprestimo emprestimo;
 
     private Boolean isEmprestado;

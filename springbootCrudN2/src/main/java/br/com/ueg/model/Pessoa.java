@@ -1,12 +1,22 @@
 package br.com.ueg.model;
 
 
+import br.com.ueg.controller.EmprestimoController;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "pessoa")
+@JsonIdentityInfo(scope = Pessoa.class,
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "codPessoa")
 public class Pessoa {
 
     @Id
@@ -16,7 +26,7 @@ public class Pessoa {
 
     @OneToOne
     @JoinColumn(nullable = true, unique = false)
-    @JsonBackReference
+    @JsonFormat
     private Emprestimo emprestimo;
 
     public Long getCodPessoa() {
