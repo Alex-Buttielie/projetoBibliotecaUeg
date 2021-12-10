@@ -5,9 +5,13 @@ import br.com.ueg.model.Pessoa;
 import br.com.ueg.repository.PessoaRepository;
 import br.com.ueg.service.PessoaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,14 +23,30 @@ public class PessoaImpl implements PessoaService {
     @Autowired
     private PessoaRepository pessoaRep;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     @Autowired
     public PessoaImpl (PessoaRepository pessoaRepository){
         this.pessoaRep = pessoaRepository;
     }
 
     @Override
+    public List<Pessoa> buscarPessoasLivresParaEmprestimo() {
+        return pessoaRep.findAll(Sort.by(Sort.Direction.ASC));
+    }
+
+    private StringBuilder buscarPessoasLivresEmprestimo() {
+        StringBuilder sql = new StringBuilder();
+         return sql
+                .append("SELECT * FROM pessoa ")
+                .append("WHERE emprestimo_cod_emprestimo isnull");
+
+    }
+
+    @Override
     public List<Pessoa> listar() {
-        return pessoaRep.findAll();
+        return pessoaRep.findAll(Sort.by(Sort.Direction.ASC, "codPessoa"));
     }
 
     @Override

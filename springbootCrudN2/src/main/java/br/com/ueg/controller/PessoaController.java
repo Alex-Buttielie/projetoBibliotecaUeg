@@ -28,9 +28,14 @@ public class PessoaController {
         return pessoaService.listar();
     }
 
+    @GetMapping("/buscarPessoasLivresParaEmprestimo")
+    public java.util.List<Pessoa> buscarPessoasLivresParaEmprestimo(){
+        return pessoaService.buscarPessoasLivresParaEmprestimo();
+    }
+
     @GetMapping("/pessoa/{id}")
     public Pessoa consultar(@PathVariable Long id){
-    return pessoaService.consultar(id);
+        return pessoaService.consultar(id);
     }
 
     @PostMapping("/salvar")

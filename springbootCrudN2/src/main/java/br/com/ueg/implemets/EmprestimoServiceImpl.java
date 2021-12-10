@@ -49,6 +49,7 @@ public class EmprestimoServiceImpl implements EmprestimoService {
     public Emprestimo salvar(Emprestimo emprestimo) {
 
         emprestimo.getLivro().setEmprestado(true);
+        emprestimo.setIsEmprestimoAtivo(true);
         emprestimo = emprestimoRep.save(emprestimo);
 
         this.atualizarEmprestimoNoLivro(emprestimo);
